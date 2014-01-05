@@ -1,0 +1,82 @@
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="css/styles.css" />
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
+	<link rel="stylesheet" type="text/css" href="css/bootstrap-theme.css" />
+</head>
+<body ng-app="MyApp">
+	<main>
+		<nav ng-controller="NavController">
+			<a class="buttonLink" ng-click="gotoCamera()">Take a Picture</a>
+			<a class="buttonLink" ng-click="gotoPicture()">Edit Picture</a>
+		</nav>
+
+		<div id="CameraView" ng-controller="CameraController" ng-show="showCamera">
+			<section id="CameraSection">
+				<div camera camera-api="cameraAPI" width="{{width}}" height="{{height}}" ></div>
+			</section>
+			<section id="CameraControls" class="controls">
+				<button ng-click="takeSnapshot()">Take Picture</button>
+				<button ng-click="takeDelayedSnapshot()" ng-bind="delayedLabel"></button>
+<!--				
+				<input class="small" type="text" ng-model="width" keycontrol />
+				<input class="small" type="text" ng-model="height" keycontrol />
+-->
+			</section>
+		</div>
+		
+		<div id="PictureView" ng-controller="PictureController" ng-show="showPicture">
+			<section id="PictureSection">
+				<div picture picture-api="pictureAPI" width="{{picturewidth}}" height="{{pictureheight}}"></div>
+			</section>
+			<section id="PictureControls" class="controls">
+				<div>
+					<button ng-click="clearText()">Clear Text</button>
+					<textarea type="text" ng-model="text"></textarea>
+				</div>
+<!--
+				<div>
+					<input class="small" type="text" ng-model="textInfo.left" keycontrol />
+					<input class="small" type="text" ng-model="textInfo.top" keycontrol />
+					<input class="small" type="text" ng-model="textInfo.lineHeight" keycontrol />
+					<input class="small" type="text" ng-model="textInfo.maxWidth" keycontrol />
+				</div>
+-->
+				<div>
+					<a class="buttonLink" id="EmailLink" ng-click="openEmail()" ng-href="#">Email This to a Friend</a>
+					<a class="buttonLink" id="DownloadLink" ng-href="{{downloadURL}}" download="picture.png">Download This Image</a>
+				</div>
+			</section>
+		</div>
+
+	    <script type="text/ng-template" id="modal.html">
+	        <div class="modal-header">
+	            <h3>Send to your Friend!</h3>
+	        </div>
+	        <form name="UserForm" class="modal-body">
+	        	<div><label>To (Email): </label><input type="email" ng-model="user.to" required /></label></div>
+	        	<div><label>Name: </label><input ng-model="user.name" required /></label></div>
+	        	<div><label>From (Email): </label><input type="email" ng-model="user.email" required /></label></div>
+	        	<div><label>Subject: </label><input ng-model="user.subject" required ng-minlength="1"/></label></div>
+	        	<div><label>Message: </label></div>
+	        	<div><textarea ng-model="user.message" required ng-minlength="1"></textarea></div>
+	        </form>
+	        <div class="modal-footer">
+	            <button ng-disabled="!UserForm.$valid" class="btn btn-primary" ng-click="ok()">OK</button>
+	            <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+	        </div>
+	    </script>		
+
+
+	</main>
+
+	<script type="text/javascript" src="lib/angular.js"></script>
+	<script type="text/javascript" src="lib/angular-route.js"></script>
+	<script type="text/javascript" src="lib/ui-bootstrap-custom-0.9.0.js"></script>
+	<script type="text/javascript" src="lib/ui-bootstrap-custom-tpls-0.9.0.js"></script>
+	<script type="text/javascript" src="lib/easeljs-0.7.1.min.js"></script>
+	<script type="text/javascript" src="js/app.js"></script>
+	<script type="text/javascript" src="js/services.js"></script>
+	<script type="text/javascript" src="js/directives.js"></script>
+</body>
+</html>
