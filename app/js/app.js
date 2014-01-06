@@ -1,8 +1,9 @@
 (function() { 
 "use strict";
 
-angular.module("MyApp", ["ngRoute", "ui.bootstrap"])
-.config(["$compileProvider", "$routeProvider", "$httpProvider", function($compileProvider, $routeProvider, $httpProvider) {
+angular.module("MyApp", ["ngAnimate", "ui.bootstrap"])
+//.config(["$compileProvider", "$routeProvider", "$httpProvider", function($compileProvider, $routeProvider, $httpProvider) {
+.config(["$compileProvider", "$httpProvider", function($compileProvider, $httpProvider) {
 	var oldWhiteList = $compileProvider.imgSrcSanitizationWhitelist();
 	$compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|file|blob):|data:image\/|data:application\/octet-stream/);
 	$compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|file|blob):|data:image\/|data:application\/octet-stream/);
@@ -76,10 +77,31 @@ angular.module("MyApp", ["ngRoute", "ui.bootstrap"])
 
 
 }])
+
 .controller("NavController", ["$scope", "AppState", function($scope, AppState) { 
 	$scope.gotoCamera = function()  { AppState.set("showCamera", true);	 AppState.set("showPicture", false); }
 	$scope.gotoPicture = function() { AppState.set("showCamera", false); AppState.set("showPicture", true); }
 }])
+
+.controller("AlertController", ["$scope", "$rootScope", "AppState", function($scope, $rootScope, AppState) { 
+	$scope.closeable = true;
+	$scope.alerts = [];
+	$scope.addAlert = function(type, msg) {
+		if(["danger", "success"].indexOf(type) < 0) { type = "success"; }
+		$scope.alerts.push({type: type, msg: msg});
+	}
+
+	$scope.closeAlert = function(index) {
+		$scope.alerts.splice(index, 1);
+	};	
+
+	$rootScope.$on("AppState.Alert::changed", function() { 
+		var alert = AppState.get("Alert");
+		$scope.alerts = [];
+		$scope.addAlert(alert.type, alert.msg);
+	});
+}])
+
 .controller("CameraController", ["$scope", "$rootScope", "$timeout", "AppState", function($scope, $rootScope, $timeout, AppState) {
 	$rootScope.$on("AppState.showCamera::changed", function() { $scope.showCamera = AppState.get("showCamera"); })
 
@@ -89,8 +111,9 @@ angular.module("MyApp", ["ngRoute", "ui.bootstrap"])
 
 	$scope.showCamera = true;
 	$scope.delayedLabel = "Take Delayed Picture (5s)";
-	$scope.width = 400;
-	$scope.height = 300;
+	$scope.width = 300;
+	$scope.height = 225;
+	$scope.isTakingPhoto = false;
 
 	$scope.takeSnapshot = function() { takePicture(); }
 
@@ -99,13 +122,15 @@ angular.module("MyApp", ["ngRoute", "ui.bootstrap"])
 		function countdown(num) {
 			if(num < 0) { 
 				takePicture();
+				$scope.isTakingPhoto = false;
 				$scope.delayedLabel = "Take Delayed Picture (5s)"
 			}
 			else {
-				$scope.delayedLabel = num;
+				$scope.delayedLabel = "Picture in " + num + " seconds...";
 				timeout = $timeout(function() { countdown(num - 1); }, 1000);
 			}
 		}
+		$scope.isTakingPhoto = true;
 		$timeout.cancel(timeout);
 		countdown(5);
 	}	
@@ -122,17 +147,20 @@ angular.module("MyApp", ["ngRoute", "ui.bootstrap"])
 		$scope.showPicture = AppState.get("showPicture"); 
 		$scope.downloadURL = AppState.get("pictureAPI").getPicture();
 	});
+
+/*
 	$rootScope.$on("TextPos::changed", function(name, response) { 
-		console.log(response);
 		$scope.$apply(function() { 
 			$scope.textInfo.left = response.left;
 			$scope.textInfo.top = response.top;
 		});
 	});
+*/
 
 	$scope.showPicture = false;
-	$scope.picturewidth = 400;
-	$scope.pictureheight = 300;
+	$scope.picturewidth = 300;
+	$scope.pictureheight = 225;
+	$scope.textFocus = false;
 
 	$timeout(function() { 
 		AppState.set("pictureAPI", $scope.pictureAPI);
@@ -149,7 +177,9 @@ angular.module("MyApp", ["ngRoute", "ui.bootstrap"])
 		}
 	})
 
-	$timeout(function() {$scope.textInfo = { left: 0, top: 200, lineHeight: 50, maxWidth : $scope.picturewidth }; }, 1000);
+
+/*
+	$timeout(function() {$scope.textInfo = { left: 0, top: 0, lineHeight: 50, maxWidth : $scope.picturewidth }; }, 1000);
 
 	$scope.$watch("textInfo.left", function() { 
 		if(!AppState.get("pictureAPI")) { return; }
@@ -167,6 +197,7 @@ angular.module("MyApp", ["ngRoute", "ui.bootstrap"])
 		if(!AppState.get("pictureAPI")) { return; }
 		AppState.get("pictureAPI").set("maxWidth", $scope.textInfo.maxWidth);
 	})
+*/
 
 	$scope.download = function() {
 	    var dt = AppState.get("pictureAPI").getPicture();
@@ -176,20 +207,22 @@ angular.module("MyApp", ["ngRoute", "ui.bootstrap"])
 	$scope.clearText = function() {
 		$scope.text = '';
 	}
+
+	$scope.editText = function() { 
+		$scope.textFocus = true;
+	}
  
 	$scope.openEmail = function() { 
 		function ModalInstanceCtrl ($scope, $modalInstance, EmailService, picture) {
 
-//			$scope.user = { to: "", name: "", email: "", subject: "", message: "" };
 			$scope.user = { 
 				to: "john.p.pangilinan@gmail.com", 
-				name: "John", 
+				name: "<blank>", 
 				email: "john.pangilinan1@gmail.com", 
-				subject: "Greetings! An image from " + this.name, 
+				subject: "Greetings! An image from <blank>", 
 				message: "You have a message from a special person!" };
 
 			$scope.ok = function () {
-				console.log(picture, $scope);
 				var data = { 
 					to: $scope.user.to,
 					name: $scope.user.name, 
@@ -201,9 +234,11 @@ angular.module("MyApp", ["ngRoute", "ui.bootstrap"])
 					.then(function(response) { 
 						console.log(response); 
 						$modalInstance.close("ok");
+						AppState.set("Alert", {type: "success", msg: "Your message has been sent!"});
 					}, 
 					function(response) { 
 						console.log(response); 
+						AppState.set("Alert", {type: "danger", msg: "Unfortunately, your message has not been sent, please send an email to <a href=\"mailto: johnpangilinan1@gmail.com\">johnpangilinan1@gmail.com</a>"});
 					} );
 				
 			};

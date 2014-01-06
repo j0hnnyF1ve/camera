@@ -1,0 +1,28 @@
+13. BUG: Fix issue with drag and drop of text
+  a. Dragging causes it to render in a different place when we type again
+15. BUG: Fix Touch when dragging text on mobile
+4. Implement splash page for those people that don't have access to the camera API
+8. Skin page
+9. Reorganize UI
+  a. Add Text, Email This to a Friend, Download This Image
+  b. Implement Text as a dialog
+
+
+7. (Optional) Put in some fancy filters on the Picture page
+  a. Implement this as a drawer that either pulls out from the right side
+9. (Optional) Look into putting it on FB
+14. (Optional) Automate deployment using Jenkins/Grunt, everytime we push to GIT it should push to release
+
+
+6. NOTE: If we want to eliminate the "wants to your camera" message, we must use HTTPS
+
+
+-1. Set up routing for multiple pages
+-2. Make this into a two page app
+  -a. Camera page
+  -b. Picture page
+-3. Put email functionality on Picture page
+-5. Figure out resizing/scaling of canvas on resizing of browser - we will keep constant size
+-11. Check into GIT
+-10. Make a prod and dev deployment, prod will not change unless we make a release
+-12. Finish dialog, pop a message up notifying the user that we are done

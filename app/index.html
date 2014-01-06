@@ -1,23 +1,27 @@
 <html>
 <head>
+	<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
 	<link rel="stylesheet" type="text/css" href="css/styles.css" />
 	<link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
 	<link rel="stylesheet" type="text/css" href="css/bootstrap-theme.css" />
 </head>
 <body ng-app="MyApp">
-	<main>
+	<main ng-cloak class="ng-cloak">
 		<nav ng-controller="NavController">
 			<a class="buttonLink" ng-click="gotoCamera()">Take a Picture</a>
 			<a class="buttonLink" ng-click="gotoPicture()">Edit Picture</a>
 		</nav>
+		<div id="AlertSection" ng-controller="AlertController">
+			<alert class="fadeIn" ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)">{{alert.msg}}</alert>
+		</div>
 
 		<div id="CameraView" ng-controller="CameraController" ng-show="showCamera">
 			<section id="CameraSection">
 				<div camera camera-api="cameraAPI" width="{{width}}" height="{{height}}" ></div>
 			</section>
 			<section id="CameraControls" class="controls">
-				<button ng-click="takeSnapshot()">Take Picture</button>
-				<button ng-click="takeDelayedSnapshot()" ng-bind="delayedLabel"></button>
+				<a class="buttonLink" ng-disabled="isTakingPhoto" ng-click="takeSnapshot()" ng-href="#">Take Picture</a>
+				<a class="buttonLink" ng-disabled="isTakingPhoto" ng-click="takeDelayedSnapshot()" ng-bind="delayedLabel"ng-href="#"></a>
 <!--				
 				<input class="small" type="text" ng-model="width" keycontrol />
 				<input class="small" type="text" ng-model="height" keycontrol />
@@ -30,9 +34,8 @@
 				<div picture picture-api="pictureAPI" width="{{picturewidth}}" height="{{pictureheight}}"></div>
 			</section>
 			<section id="PictureControls" class="controls">
+				<textarea type="text" ng-focus="textFocus" ng-model="text"></textarea>
 				<div>
-					<button ng-click="clearText()">Clear Text</button>
-					<textarea type="text" ng-model="text"></textarea>
 				</div>
 <!--
 				<div>
@@ -43,8 +46,10 @@
 				</div>
 -->
 				<div>
-					<a class="buttonLink" id="EmailLink" ng-click="openEmail()" ng-href="#">Email This to a Friend</a>
-					<a class="buttonLink" id="DownloadLink" ng-href="{{downloadURL}}" download="picture.png">Download This Image</a>
+					<a class="buttonLink" ng-click="editText()" ng-href="#">Edit Text</a>
+					<a class="buttonLink" ng-click="clearText()" ng-href="#">Clear Text</a>
+					<a class="buttonLink" id="EmailLink" ng-click="openEmail()" ng-href="#">Email to a Friend</a>
+					<a class="buttonLink" id="DownloadLink" ng-href="{{downloadURL}}" download="picture.png">Download</a>
 				</div>
 			</section>
 		</div>
@@ -71,7 +76,8 @@
 	</main>
 
 	<script type="text/javascript" src="lib/angular.js"></script>
-	<script type="text/javascript" src="lib/angular-route.js"></script>
+	<script type="text/javascript" src="lib/angular-animate.js"></script>
+<!--	<script type="text/javascript" src="lib/angular-route.js"></script> -->
 	<script type="text/javascript" src="lib/ui-bootstrap-custom-0.9.0.js"></script>
 	<script type="text/javascript" src="lib/ui-bootstrap-custom-tpls-0.9.0.js"></script>
 	<script type="text/javascript" src="lib/easeljs-0.7.1.min.js"></script>

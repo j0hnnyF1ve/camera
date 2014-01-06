@@ -144,9 +144,9 @@ angular.module("MyApp")
 		    	properties["width"] = w;
 		    	properties["height"] = h;
 		    	properties["textLeft"] = 20;
-		    	properties["textTop"] = 220;
+		    	properties["textTop"] = 20;
 		    	properties["lineHeight"] = 50;
-		    	properties["maxWidth"] = w;
+		    	properties["maxWidth"] = w - 40;
 
 		    scope.pictureApi = {
 		    	setPicture : function(picture) {
@@ -231,11 +231,12 @@ angular.module("MyApp")
 				    evt.currentTarget.x = evt.stageX - (largestWidth / 2);
 				    evt.currentTarget.y = evt.stageY - (totalLineHeight / 2);
 
-				    console.log(evt.currentTarget.x, evt.currentTarget.y);
 				    stage.update();
 				} );
 				dragger.on("pressup", function(evt) { 
 					$rootScope.$broadcast("TextPos::changed", {left: evt.currentTarget.x, top: evt.currentTarget.y })
+					properties["textLeft"] = evt.currentTarget.x * .66;
+					properties["textTop"] = evt.currentTarget.y;
 				});
 
 				stage.addChild(dragger);
