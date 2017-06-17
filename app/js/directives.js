@@ -1,12 +1,12 @@
-(function() { 
+(function() {
 "use strict";
 
 angular.module("MyApp")
 .directive("resizeToScreen", ["$window", function($window) {
 	return {
 		link: function(scope, element, attrs, ctrl) {
-			angular.element($window).on("resize", function() { 
-				scope.$apply(function() { 
+			angular.element($window).on("resize", function() {
+				scope.$apply(function() {
 					scope.width = $window.innerWidth;
 					scope.height = $window.innerWidth * (3/4);
 				})
@@ -17,7 +17,7 @@ angular.module("MyApp")
 }])
 
 /* THIS DIRECTIVES ALLOWS US TO ASSIGN KEY CONTROLS TO AN ELEMENT WITH AN NG-MODEL ATTACHED TO IT */
-.directive("keycontrol", ["$parse", function($parse) { 
+.directive("keycontrol", ["$parse", function($parse) {
 	return {
 		restrict: "A",
 		compile: function(element, attrs) {
@@ -28,13 +28,13 @@ angular.module("MyApp")
 				element.on("keydown", function(event) {
 					if([38,40].indexOf(event.keyCode) < 0) { return; }
 
-					scope.$apply(function(scope) { 
+					scope.$apply(function(scope) {
 						var num = element.val();
 						if(isNaN(num) ) { return; }
 						switch(event.keyCode) {
 							case 38: // up
 								modelAccessor.assign(scope, parseInt(num, 0) + 1)
-								break;	
+								break;
 							case 40: // down
 								modelAccessor.assign(scope, parseInt(num, 0) - 1)
 								break;
@@ -47,7 +47,7 @@ angular.module("MyApp")
 
 	}
 }])
-.directive("camera", ["CameraService", function(CameraService) { 
+.directive("camera", ["CameraService", function(CameraService) {
 	return {
 		replace: true,
 		transclude: true,
@@ -56,9 +56,9 @@ angular.module("MyApp")
 		},
 		template: '<video class="video" autoplay></video>',
 		compile: function(element, attrs) {
-			if (!CameraService.hasUserMedia ) { 
+			if (!CameraService.hasUserMedia ) {
 				element.replaceWith("Sorry, we are unable to access your camera.");
-				return {}; 
+				return {};
 			}
    	    	var w = attrs.width || 400,
 	        	h = attrs.height || 300;
@@ -67,8 +67,33 @@ angular.module("MyApp")
 
 				var userMedia = CameraService.getUserMedia();
 				var videoElement = document.querySelector("video");
+/*
+				var constraints = video: {
+			    mandatory: {
+			      maxHeight: h,
+			      maxWidth: w
+			    }
+			  };
+*/
+				const constraints = {
+					audio: false,
+					video: {
+						width: { min: w },
+						height: { min: h }
+					}
+				};
 
-				var onSuccess = function(stream) {
+				// Make the request for the media
+				navigator.getUserMedia(constraints, onSuccess, onFailure);
+
+				// set the scope variables
+				scope.w = w; scope.h = h;
+				scope.cameraApi = {
+					getSnapshot : function() { return videoElement; }
+				}
+
+				// Success/Failure handlers
+				function onSuccess(stream) {
 				  if (navigator.mozGetUserMedia) {
 				    videoElement.mozSrcObject = stream;
 				  } else {
@@ -79,28 +104,10 @@ angular.module("MyApp")
 				  videoElement.play();
 				}
 				// If there is an error
-				var onFailure = function(err) {
+				function onFailure(err) {
 				  console.error(err);
 				}
-				// Make the request for the media
-				navigator.getUserMedia({
-				  video: {
-				    mandatory: {
-				      maxHeight: h,
-				      maxWidth: w
-				    }
-				  }, 
-				  audio: false
-				}, onSuccess, onFailure);
 
-				scope.w = w;
-				scope.h = h;
-
-				scope.cameraApi = {
-					getSnapshot : function() {
-						return videoElement;
-					}
-				}
 			} // END LINK
 
 		},
@@ -123,10 +130,10 @@ angular.module("MyApp")
 
 	        scope.$watch("attrs.width", function() { properties["width"] = attrs.width; draw(); });
 	        scope.$watch("attrs.height", function() { properties["height"] = attrs.height; draw(); });
-			angular.element($window).on("resize", function() { 
+			angular.element($window).on("resize", function() {
 				canvas = element[0];
 				stage = new EaselJS.Stage(canvas);
-				
+
 				$timeout.cancel(resizeTimeout);
 				resizeTimeout = $timeout(function() {draw(); }, 250);
 			});
@@ -178,7 +185,7 @@ angular.module("MyApp")
 	    			font: "40pt Impact",
 	    			text: curText,
 	    			x: properties["textLeft"],
-	    			y: properties["textTop"], 
+	    			y: properties["textTop"],
 	    			maxWidth: properties["maxWidth"],
 	    			lineHeight: properties["lineHeight"]
 	    		}
@@ -190,7 +197,7 @@ angular.module("MyApp")
 			function wrapText(params) {
 				var curStage = params.stage,
 					font = params.font,
-					text = params.text, 
+					text = params.text,
 					x = params.x,
 					y = params.y,
 					maxWidth = params.maxWidth,
@@ -212,7 +219,7 @@ angular.module("MyApp")
 
 				  if (testWidth > maxWidth && n > 0) {
 				  	writeText({ parent: dragger, stage: curStage, font: font, text: testLine, x: 0, y: curY});
-				    
+
 				    line = ' ';
 				    curY = parseInt(curY, 0) + parseInt(lineHeight, 0);
 				  }
@@ -233,14 +240,14 @@ angular.module("MyApp")
 
 				    stage.update();
 				} );
-				dragger.on("pressup", function(evt) { 
+				dragger.on("pressup", function(evt) {
 					$rootScope.$broadcast("TextPos::changed", {left: evt.currentTarget.x, top: evt.currentTarget.y })
 					properties["textLeft"] = evt.currentTarget.x * .66;
 					properties["textTop"] = evt.currentTarget.y;
 				});
 
 				stage.addChild(dragger);
-			}		    
+			}
 
 			function writeImage(params) {
 				var bitmap = new EaselJS.Bitmap(params.img);
@@ -253,7 +260,7 @@ angular.module("MyApp")
 				var curStage = params.stage,
 					parent = params.parent,
 					font = params.font,
-					curText = params.text, 
+					curText = params.text,
 					x = params.x,
 					y = params.y
 
@@ -264,13 +271,13 @@ angular.module("MyApp")
 				var strokeArray = [{x: -strokeAmount, y: 0}, {x: 0, y: -strokeAmount}, {x: strokeAmount, y: 0}, {x: 0, y: strokeAmount}];
 				for(var i=0; i < strokeArray.length; i++) {
 					var text2 = new EaselJS.Text(curText, font, "#000");
-					text2.x = parseInt(x, 0) + parseInt(strokeArray[i].x, 0); 
+					text2.x = parseInt(x, 0) + parseInt(strokeArray[i].x, 0);
 					text2.y = parseInt(y, 0) + parseInt(strokeArray[i].y, 0);
 					parent.addChild(text2);
 				}
 
 				var text = new EaselJS.Text(curText, font, "#fff");
-				text.x = x; 
+				text.x = x;
 				text.y = y;
 				parent.addChild(text);
 			}
