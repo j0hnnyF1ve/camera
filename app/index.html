@@ -4,6 +4,7 @@
 	<link rel="stylesheet" type="text/css" href="css/styles.css" />
 	<link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
 	<link rel="stylesheet" type="text/css" href="css/bootstrap-theme.css" />
+	<title>Selfie Camera Prototype</title>
 </head>
 <body ng-app="MyApp">
 	<main ng-cloak class="ng-cloak">
@@ -22,13 +23,13 @@
 			<section id="CameraControls" class="controls">
 				<a class="buttonLink" ng-disabled="isTakingPhoto" ng-click="takeSnapshot()" ng-href="#">Take Picture</a>
 				<a class="buttonLink" ng-disabled="isTakingPhoto" ng-click="takeDelayedSnapshot()" ng-bind="delayedLabel"ng-href="#"></a>
-<!--				
+<!--
 				<input class="small" type="text" ng-model="width" keycontrol />
 				<input class="small" type="text" ng-model="height" keycontrol />
 -->
 			</section>
 		</div>
-		
+
 		<div id="PictureView" ng-controller="PictureController" ng-show="showPicture">
 			<section id="PictureSection">
 				<div picture picture-api="pictureAPI" width="{{picturewidth}}" height="{{pictureheight}}"></div>
@@ -70,7 +71,7 @@
 	            <button ng-disabled="!UserForm.$valid" class="btn btn-primary" ng-click="ok()">OK</button>
 	            <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
 	        </div>
-	    </script>		
+	    </script>
 
 
 	</main>
@@ -80,7 +81,9 @@
 <!--	<script type="text/javascript" src="lib/angular-route.js"></script> -->
 	<script type="text/javascript" src="lib/ui-bootstrap-custom-0.9.0.js"></script>
 	<script type="text/javascript" src="lib/ui-bootstrap-custom-tpls-0.9.0.js"></script>
-	<script type="text/javascript" src="lib/easeljs-0.7.1.min.js"></script>
+
+	<script src="https://code.createjs.com/easeljs-0.8.2.min.js"></script>
+
 	<script type="text/javascript" src="js/app.js"></script>
 	<script type="text/javascript" src="js/services.js"></script>
 	<script type="text/javascript" src="js/directives.js"></script>

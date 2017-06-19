@@ -158,13 +158,15 @@ angular.module("MyApp")
 		    scope.pictureApi = {
 		    	setPicture : function(picture) {
 
-					// WE DRAW THE PICTURE ON THE CANVAS SO WE CAN SAVE IT FOR REDRAWING THE SCREEN LATER
-					// EASELJS SEEMS TO HAVE A PROBLEM WITH THE SIZE WHEN WE DRAW IT DIRECTLY FROM THE VIDEO
-					canvas.getContext("2d").drawImage(picture, 0, 0, canvas.offsetWidth, canvas.offsetHeight);
-					curPicture = new Image;
-					curPicture.src = canvas.toDataURL("png");
+						// WE DRAW THE PICTURE ON THE CANVAS SO WE CAN SAVE IT FOR REDRAWING THE SCREEN LATER
+						// EASELJS SEEMS TO HAVE A PROBLEM WITH THE SIZE WHEN WE DRAW IT DIRECTLY FROM THE VIDEO
+						canvas.getContext("2d").drawImage(picture, 0, 0, canvas.offsetWidth, canvas.offsetHeight);
+						curPicture = new Image;
+						curPicture.addEventListener("load", () => {
+							draw();
+						});
+						curPicture.src = canvas.toDataURL("png");
 
-			    	draw();
 		    	},
 		    	getPicture : function() {
 		    		return canvas.toDataURL("png");
@@ -177,21 +179,21 @@ angular.module("MyApp")
 		    function draw() {
 
 		    	// ADD CURRENT CAMERA IMAGE
-				var bitmap = writeImage({img: curPicture, x:0, y:0, width: canvas.offsetWidth, height: canvas.offsetHeight });
-				stage.addChild(bitmap);
+					var bitmap = writeImage({img: curPicture, x:0, y:0, width: canvas.offsetWidth, height: canvas.offsetHeight });
+					stage.addChild(bitmap);
 
-	    		var textParams = {
-	    			stage: stage,
-	    			font: "40pt Impact",
-	    			text: curText,
-	    			x: properties["textLeft"],
-	    			y: properties["textTop"],
-	    			maxWidth: properties["maxWidth"],
-	    			lineHeight: properties["lineHeight"]
-	    		}
+		    		var textParams = {
+		    			stage: stage,
+		    			font: "40pt Impact",
+		    			text: curText,
+		    			x: properties["textLeft"],
+		    			y: properties["textTop"],
+		    			maxWidth: properties["maxWidth"],
+		    			lineHeight: properties["lineHeight"]
+		    		}
 
-	    		if(curText.length > 0) { wrapText(textParams); }
-				stage.update();
+		    		if(curText.length > 0) { wrapText(textParams); }
+					stage.update();
 		    }
 
 			function wrapText(params) {

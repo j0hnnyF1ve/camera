@@ -111,8 +111,8 @@ angular.module("MyApp", ["ngAnimate", "ui.bootstrap"])
 
 	$scope.showCamera = true;
 	$scope.delayedLabel = "Take Delayed Picture (5s)";
-	$scope.width = "80%";
-	$scope.height = "60%";
+	$scope.width = "400";
+	$scope.height = "300";
 	$scope.isTakingPhoto = false;
 
 	$scope.takeSnapshot = function() { takePicture(); }
@@ -158,8 +158,8 @@ angular.module("MyApp", ["ngAnimate", "ui.bootstrap"])
 */
 
 	$scope.showPicture = false;
-	$scope.picturewidth = 300;
-	$scope.pictureheight = 225;
+	$scope.picturewidth = "400";
+	$scope.pictureheight = "300";
 	$scope.textFocus = false;
 
 	$timeout(function() {
@@ -216,9 +216,11 @@ angular.module("MyApp", ["ngAnimate", "ui.bootstrap"])
 		function ModalInstanceCtrl ($scope, $modalInstance, EmailService, picture) {
 
 			$scope.user = {
-				to: "john.p.pangilinan@gmail.com",
+//				to: "john.p.pangilinan@gmail.com",
+				to: "",
 				name: "<blank>",
-				email: "john.pangilinan1@gmail.com",
+//				email: "john.pangilinan1@gmail.com",
+				email: "",
 				subject: "Greetings! An image from <blank>",
 				message: "You have a message from a special person!" };
 
